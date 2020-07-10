@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+   <head>
+    <title>try</title>
+
+
+    <style type="text/css">
+
+.container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #141414;
+        }
+     
+        .board{
+            background-color: #4a4848;
+            height: 450px;
+            width: 450px;
+            margin: 20px;
+            margin-top: 50px;
+        }
+        .rows{
+            height: 50px;
+            width: 450px;
+            display: grid;
+            grid-template-columns: repeat(9,50px);
+            
+        }
+
+        .cells{
+            border: 1px solid black;
+           border-radius: 5px;
+            background-color: aqua;
+           
+          height: 50px;
+           width: 50px;
+           
+            }
+           
+        .green{
+            background-color: green;
+        }
+        .red{
+            background-color: red;
+        }
+        .displayBomb{
+            font-size: 20px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+        .displayMark{
+            font-size: 35px;
+            font-weight: 820;
+            color:#ffaa00;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+           
+        }
+
+        #message{
+            background-color: #ffaa00;
+            font-size: 28px;
+            border: 1px solid grey;
+            border-radius: 7px;
+            padding: 5px;
+            margin: 10px;
+            text-align: center;
+        }
+        .btn{
+            font-size: 15px;
+            font-weight: 600;
+            color: #d8cfc2;
+            display: block;
+            width: 100px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid gray;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            background-color: #ffaa00b0;
+        }
+        
+      
+           
+    </style>
+
+
+   </head>
+   <body>
+         <div class="container">    
+           <div id="board" class="board"></div>
+           <div id="message"></div>
+           <button onclick="restart()" class="btn">Restart</button>
+        </div>     
+
+
+
+    <script type="text/javascript">
+
+       var isClicked = false;
+       var clickMap = new Map();
+
+        const rowSize = 9; const columnSize = 9;
+        var arr = [];
+              while(arr.length < 81){
+                  let temp = Math.round(Math.random()*81);
+
+                  if(arr.indexOf(temp) < 0){
+                      arr.push(temp);
+
+                  }
+              }
+        
+        function initBoard(){
+            let count = 0;
+            const board = document.getElementById("board");
+
+            for(let i=0; i<rowSize; i++){
+                const rowEl = document.createElement("div");
+                rowEl.classList.add("rows");
+            for(let j=0; j<columnSize; j++){
+                    const el = document.createElement("div");
+                        
+                   
+                    el.setAttribute('id','cell'+i+j);
+
+                  
+
+                    let elValue = arr[count];
+                    
+                    const numOfCellEl = document.createElement("div");
+                    numOfCellEl.setAttribute('id',elValue);
+                    el.appendChild(numOfCellEl);
+
+                   
+                    el.classList.add("cells");
+
+                    clickMap.set(el,"false");
+
+                    el.addEventListener("contextmenu", (e) => {
+                        e.preventDefault();
+                    });
+
+                    el.addEventListener("mouseup", (event) => handleClick(event, i, j, el,elValue));
+                   rowEl.appendChild(el);
+                   count++;
+                }
+                board.appendChild(rowEl);
+            }
+            }
+           
+            
+            var counter = 0;
+
+          
+            
+
+            var clickedArr = [];
+            var ans = [0,1,2,3,4,5,6,7,8,9];
+
+
+
+
+
+
+     function handleClick(event, i, j, el, elValue){
+        
+           if(clickMap.get(el) === "false"){
+                   
+        if(event.button === 0) {
+              
+                if(el.childNodes.length === 2){
+                    el.removeChild(el.childNodes[1]);
+                }
+                  let innerValueOfCell = parseInt(el.childNodes[0].id);
+                     
+                  // console.log("clicked",i,j,elValue); 
+                   //console.log(innerValueOfCell);
+
+
+             if(ans.indexOf(innerValueOfCell)<0){
+
+                      let displayNumberInTheCell = 0;
+                      el.classList.add("green");
+                       counter++;
+
+
+                      if(i===0 && j === 0){
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt( document.getElementById("cell"+(i+1)+j).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                                  }
+    
+                     if(i===0 && j === 8){
+                           if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j-1)).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j-1)).childNodes[0].id)) < 0)
+                                      displayNumberInTheCell++;
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+j).childNodes[0].id)) < 0)
+                                      displayNumberInTheCell++;
+                                             } 
+         
+                     if(i===8 && j === 0){
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j+1)).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+j).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+
+                                        }
+                     if(i===8 && j === 8){
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j-1)).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j-1)).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+                              if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+j).childNodes[0].id)) < 0)
+                                     displayNumberInTheCell++;
+
+                                        } 
+                    if(i===0 && j >= 1 && j<8){
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+j).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;    
+                                  }
+                   if(i===8 && j >= 1 && j<8){
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+j).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;    
+                                  }
+                    if(j===8 && i >= 1 && i<8){
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+j+(i+1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(j)+(i-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;    
+                                  }
+                    if(j===0 && i >= 1 && i<8){
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+j).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;    
+                                  } 
+                   if(j>=1 && j<8 && i >= 1 && i<8){
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+j).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j+1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i-1)+(j-1)).childNodes[0].id)) < 0)
+                               displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+j).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                            if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+(i+1)+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j+1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;
+                             if(ans.indexOf(parseInt(document.getElementById("cell"+i+(j-1)).childNodes[0].id)) < 0)
+                                 displayNumberInTheCell++;    
+                                  }                                                                              
+                                        
+                   
+                  
+                 const displayInCellEl = document.createElement("div");
+                 displayInCellEl.classList.add("displayBomb");
+                 displayInCellEl.textContent = displayNumberInTheCell;
+                 el.appendChild(displayInCellEl);                       
+
+
+
+
+             if(counter == 71){
+                document.querySelector("#message").textContent = "COGRATULATION! YOU WON. click restart Button";
+                    }
+
+                    clickedArr.push(elValue);
+                    }
+       
+        else {
+            clickedArr.push(elValue);
+           
+            for(let i=0; i<columnSize; i++){
+                    for(let j=0; j<columnSize; j++){
+                          let makeItRed = document.getElementById("cell"+i+j);
+                          let makeItRedValue =  parseInt(document.getElementById("cell"+i+j).childNodes[0].id);
+                         
+                                if(ans.indexOf(makeItRedValue) >0){
+                                           makeItRed.classList.add("red");
+                                           clickedArr.push(makeItRedValue);
+
+                                                          }
+                                   clickMap.set(makeItRed,"true");                       
+                                                                  
+
+                }
+        }
+        document.querySelector("#message").textContent = "KAB0OM! It was BOMB. click restart Button";
+    }
+
+    clickMap.set(el, "true");
+}
+else if(event.button === 2){
+    const displayInCellEl = document.createElement("div");
+                 displayInCellEl.classList.add("displayMark");
+                 displayInCellEl.textContent = "!";
+                 el.appendChild(displayInCellEl);     
+} 
+
+     
+     }
+     else{
+         return;
+     }
+     }
+
+
+     function doNothing(){
+         return false;
+     }
+                   
+   
+            function restart(){
+                
+                counter = 0;
+                document.querySelector("#message").textContent = "";
+                   
+                    for(let i=0; i<rowSize; i++){
+                        for(let j=0; j<columnSize; j++){
+
+                            let eachCell = document.getElementById("cell"+i+j);
+                            let eachCellValue = parseInt(eachCell.childNodes[0].id);
+
+                           
+                                 if(eachCell.classList.contains("red"))
+                                     eachCell.classList.remove("red");
+                                 if(eachCell.classList.contains("green"))
+                                     eachCell.classList.remove("green"); 
+                                     
+                                    if(eachCell.childNodes.length === 3) {
+                                         eachCell.removeChild(eachCell.childNodes[2]);
+                                    }
+
+                                         if(eachCell.childNodes.length === 2)
+                                         eachCell.removeChild(eachCell.childNodes[1]);
+
+                        clickMap.set(eachCell, "false");
+                            }
+                        }
+                    }
+                      
+
+                
+                        initBoard();
+
+       
+       
+    </script>
+   </body>
+</html>
